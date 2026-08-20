@@ -30,8 +30,7 @@ cd client
 npm install
 npm run dev
 ```
-Frontend runs at: http://localhost:5173
-
+Frontend runs at:  http://localhost:5173/
 ## 3. Features
 
 User Authentication (Register / Login with JWT)
