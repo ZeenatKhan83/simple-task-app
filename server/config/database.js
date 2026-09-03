@@ -79,6 +79,21 @@ const db = new sqlite3.Database(dbPath, (err) => {
         FOREIGN KEY (userId) REFERENCES users (id) ON DELETE CASCADE
       )
     `);
+
+    // 5. Create Password Resets Table (for Forgot Password / OTP flow)
+    db.run(`
+      CREATE TABLE IF NOT EXISTS password_resets (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        userId INTEGER NOT NULL,
+        otp TEXT NOT NULL,
+        expiresAt TEXT NOT NULL,
+        createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (userId) REFERENCES users (id) ON DELETE CASCADE
+      )
+    `, (err) => {
+      if (err) console.error('Error creating password_resets table:', err.message);
+      else console.log('Password resets table initialized.');
+    });
   });
 });
 

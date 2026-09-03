@@ -108,7 +108,7 @@ function App() {
   // --- RENDER LOGIN VIEW IF UNAUTHENTICATED ---
   if (!token) {
     return (
-      <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto' }}>
+      <div className="app-shell">
        {/* FLOATING WORKSPACE BACKGROUND OBJECTS */}
         <div className="bg-workspace-container">
           <div className="floating-item">📝</div>
@@ -130,7 +130,7 @@ function App() {
 
   // --- RENDER MAIN WORKSPACE IF AUTHENTICATED ---
   return (
-    <div style={{ minHeight: '100vh', padding: '40px', maxWidth: '1200px', margin: '0 auto', boxSizing: 'border-box' }}>
+    <div className="app-shell" style={{ minHeight: '100vh' }}>
       {/* BACKGROUND GRID LAYER */}
       <div className="animated-grid-bg" />
 
@@ -186,7 +186,10 @@ function App() {
 
       {/* DASHBOARD CONTENT */}
       {loading && tasks.length === 0 ? (
-        <div style={{ textAlign: 'center', color: 'var(--text-secondary)', marginTop: '80px' }}>Loading workspace...</div>
+        <div className="loading-state">
+          <span className="spinner" aria-hidden="true" />
+          <span>Loading workspace...</span>
+        </div>
       ) : (
         <>
           <Dashboard tasks={tasks} />
@@ -195,27 +198,28 @@ function App() {
           <ProductivityHeatmap />
 
           {/* SEARCH & FILTER TOOLBAR */}
-          <div className="card-surface" style={{ padding: '16px 20px', marginTop: '24px', display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '16px', alignItems: 'center' }}>
+          <div className="card-surface filter-toolbar" style={{ padding: '16px 20px', marginTop: '24px' }}>
             <input 
               type="text" 
               placeholder="🔍 Search tasks..." 
+              aria-label="Search tasks"
               value={search} 
               onChange={(e) => setSearch(e.target.value)} 
               className="input-field" 
             />
-            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="input-field">
+            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="input-field" aria-label="Filter by status">
               <option value="">All Statuses</option>
               <option value="todo">To Do</option>
               <option value="in-progress">In Progress</option>
               <option value="completed">Completed</option>
             </select>
-            <select value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)} className="input-field">
+            <select value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)} className="input-field" aria-label="Filter by priority">
               <option value="">All Priorities</option>
               <option value="low">Low</option>
               <option value="medium">Medium</option>
               <option value="high">High</option>
             </select>
-            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="input-field">
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="input-field" aria-label="Sort tasks">
               <option value="newest">Newest First</option>
               <option value="oldest">Oldest First</option>
               <option value="priority">High Priority First</option>

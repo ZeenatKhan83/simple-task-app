@@ -6,30 +6,36 @@ function Tasks({ tasks, onAddTask, onStatusChange, onDeleteTask }) {
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState('medium');
   const [dueDate, setDueDate] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title.trim()) return;
 
-    // Package the task data cleanly
-    onAddTask({
-      title,
-      description,
-      priority,
-      dueDate,
-      status: 'todo'
-    });
+    setSubmitting(true);
+    try {
+      // Package the task data cleanly
+      await onAddTask({
+        title,
+        description,
+        priority,
+        dueDate,
+        status: 'todo'
+      });
 
-    // Clear form inputs
-    setTitle('');
-    setDescription('');
-    setPriority('medium');
-    setDueDate('');
+      // Clear form inputs
+      setTitle('');
+      setDescription('');
+      setPriority('medium');
+      setDueDate('');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', alignItems: 'start' }}>
-      
+    <div className="responsive-two-col">
+
       {/* Left Hand Column: Creation Form */}
       <section style={{
         background: 'var(--bg-card)',
@@ -42,11 +48,12 @@ function Tasks({ tasks, onAddTask, onStatusChange, onDeleteTask }) {
         <h3 style={{ margin: '0 0 20px 0', fontSize: '1.3rem' }}>Create Cosmic Task</h3>
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Task Title *</label>
-            <input 
-              type="text" 
+            <label htmlFor="task-title" style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Task Title *</label>
+            <input
+              id="task-title"
+              type="text"
               required
-              placeholder="What needs to be done?" 
+              placeholder="What needs to be done?"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               style={{ width: '100%', padding: '10px', boxSizing: 'border-box', background: 'rgba(15, 20, 37, 0.6)', border: '1px solid var(--border-glass)', borderRadius: '8px', color: '#FFF' }}
@@ -54,9 +61,10 @@ function Tasks({ tasks, onAddTask, onStatusChange, onDeleteTask }) {
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Description</label>
-            <textarea 
-              placeholder="Provide a deep space mission briefing..." 
+            <label htmlFor="task-description" style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Description</label>
+            <textarea
+              id="task-description"
+              placeholder="Provide a deep space mission briefing..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows="3"
@@ -64,11 +72,12 @@ function Tasks({ tasks, onAddTask, onStatusChange, onDeleteTask }) {
             />
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+          <div className="form-row-two">
             <div>
-              <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Priority</label>
-              <select 
-                value={priority} 
+              <label htmlFor="task-priority" style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Priority</label>
+              <select
+                id="task-priority"
+                value={priority}
                 onChange={(e) => setPriority(e.target.value)}
                 style={{ width: '100%', padding: '10px', background: 'rgba(15, 20, 37, 0.6)', border: '1px solid var(--border-glass)', borderRadius: '8px', color: '#FFF' }}
               >
@@ -79,9 +88,10 @@ function Tasks({ tasks, onAddTask, onStatusChange, onDeleteTask }) {
             </div>
 
             <div>
-              <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Due Date</label>
-              <input 
-                type="date" 
+              <label htmlFor="task-due-date" style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Due Date</label>
+              <input
+                id="task-due-date"
+                type="date"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
                 style={{ width: '100%', padding: '9px', boxSizing: 'border-box', background: 'rgba(15, 20, 37, 0.6)', border: '1px solid var(--border-glass)', borderRadius: '8px', color: '#FFF' }}
@@ -89,8 +99,14 @@ function Tasks({ tasks, onAddTask, onStatusChange, onDeleteTask }) {
             </div>
           </div>
 
-          <button type="submit" style={{ marginTop: '8px', padding: '12px', background: 'var(--primary)', border: 'none', borderRadius: '8px', color: '#FFF', fontWeight: 'bold', cursor: 'pointer', transition: 'background 0.2s' }}>
-            Deploy Task
+          <button
+            type="submit"
+            disabled={submitting}
+            className="btn-primary"
+            style={{ marginTop: '8px', padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+          >
+            {submitting && <span className="spinner" aria-hidden="true" />}
+            {submitting ? 'Deploying...' : 'Deploy Task'}
           </button>
         </form>
       </section>
@@ -103,15 +119,17 @@ function Tasks({ tasks, onAddTask, onStatusChange, onDeleteTask }) {
         </h3>
 
         {tasks.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)', border: '2px dashed var(--border-glass)', borderRadius: '12px' }}>
-            Orbit is clear. No active tasks found.
+          <div className="empty-state">
+            <div className="empty-icon">🛰️</div>
+            <p className="empty-title">Orbit is clear</p>
+            <p className="empty-subtitle">No active tasks found. Create one to get started.</p>
           </div>
         ) : (
           <div style={{ maxHeight: '75vh', overflowY: 'auto', paddingRight: '8px' }}>
             {tasks.map(task => (
-              <TaskCard 
-                key={task.id} 
-                task={task} 
+              <TaskCard
+                key={task.id}
+                task={task}
                 onStatusChange={onStatusChange}
                 onDelete={onDeleteTask}
               />

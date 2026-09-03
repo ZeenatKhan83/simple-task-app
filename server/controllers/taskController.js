@@ -1,4 +1,5 @@
 const Task = require('../models/taskModel');
+const db = require('../config/database');
 
 // Handler for GET /api/tasks
 exports.getAllTasks = (req, res) => {

@@ -1,8 +1,12 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const User = require('../models/userModel');
+const PasswordReset = require('../models/passwordResetModel');
+const { sendOtpEmail } = require('../utils/mailer');
 
 const JWT_SECRET = 'cosmic_momentum_super_secret_key';
+const OTP_EXPIRY_MINUTES = 10;
 
 exports.register = (req, res) => {
   const { username, email, password } = req.body;
@@ -73,5 +77,79 @@ exports.login = (req, res) => {
     } catch (compareError) {
       res.status(500).json({ error: 'Authentication processing failed.' });
     }
+  });
+};
+
+// --- FORGOT PASSWORD: STEP 1 — Request an OTP be emailed to the user ---
+exports.forgotPassword = (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: 'Email address is required.' });
+  }
+
+  // Generic response either way — never reveal whether an email is registered
+  const genericResponse = { message: 'If that email is registered, a reset code has been sent to it.' };
+
+  User.findByEmailOrUsername(email, (err, user) => {
+    if (err) return res.status(500).json({ error: err.message });
+
+    // Don't leak whether the account exists — respond the same way regardless
+    if (!user) return res.json(genericResponse);
+
+    const otp = crypto.randomInt(100000, 999999).toString();
+    const expiresAt = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000).toISOString();
+
+    PasswordReset.invalidateExisting(user.id, (invalidateErr) => {
+      if (invalidateErr) return res.status(500).json({ error: invalidateErr.message });
+
+      PasswordReset.create(user.id, otp, expiresAt, async (createErr) => {
+        if (createErr) return res.status(500).json({ error: createErr.message });
+
+        try {
+          await sendOtpEmail(user.email, otp);
+          res.json(genericResponse);
+        } catch (mailErr) {
+          console.error('Failed to send OTP email:', mailErr.message);
+          res.status(500).json({ message: 'Could not send the reset email. Please try again shortly.' });
+        }
+      });
+    });
+  });
+};
+
+// --- FORGOT PASSWORD: STEP 2 — Verify the OTP and set a new password ---
+exports.resetPassword = (req, res) => {
+  const { email, otp, newPassword } = req.body;
+
+  if (!email || !otp || !newPassword) {
+    return res.status(400).json({ message: 'Email, code, and new password are all required.' });
+  }
+  if (newPassword.length < 6) {
+    return res.status(400).json({ message: 'New password must be at least 6 characters.' });
+  }
+
+  User.findByEmailOrUsername(email, (err, user) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!user) return res.status(400).json({ message: 'Invalid or expired code.' });
+
+    PasswordReset.findValid(user.id, otp, async (findErr, resetRecord) => {
+      if (findErr) return res.status(500).json({ error: findErr.message });
+      if (!resetRecord) return res.status(400).json({ message: 'Invalid or expired code.' });
+
+      try {
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        User.updatePassword(user.id, hashedPassword, (updateErr) => {
+          if (updateErr) return res.status(500).json({ error: updateErr.message });
+
+          // One-time use — remove the OTP so it can't be replayed
+          PasswordReset.deleteById(resetRecord.id, () => {
+            res.json({ message: 'Password reset successfully! You can now sign in.' });
+          });
+        });
+      } catch (hashError) {
+        res.status(500).json({ error: 'Password encryption failed.' });
+      }
+    });
   });
 };

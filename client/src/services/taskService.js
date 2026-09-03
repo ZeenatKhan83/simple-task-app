@@ -33,6 +33,28 @@ export const taskService = {
     return data;
   },
 
+  forgotPassword: async (email) => {
+    const response = await fetch(`${AUTH_URL}/forgot-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Failed to send reset code');
+    return data;
+  },
+
+  resetPassword: async (email, otp, newPassword) => {
+    const response = await fetch(`${AUTH_URL}/reset-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, otp, newPassword })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Failed to reset password');
+    return data;
+  },
+
   // --- TASK ENDPOINTS ---
   getTasks: async (filters = {}) => {
     const queryParams = new URLSearchParams();
@@ -113,13 +135,13 @@ export const taskService = {
     });
     if (!response.ok) throw new Error('Failed to strip subtask from data registry.');
     return await response.json();
+  },
+
+  getHeatmapData: async () => {
+    const response = await fetch(`${API_URL}/analytics/heatmap`, {
+      headers: getAuthHeaders()
+    });
+    if (!response.ok) throw new Error('Failed to fetch heatmap data');
+    return await response.json();
   }
 };
-getHeatmapData: async () => {
-  const token = localStorage.getItem('token');
-  const response = await fetch(`${API_URL}/tasks/analytics/heatmap`, {
-    headers: { 'Authorization': `Bearer ${token}` }
-  });
-  if (!response.ok) throw new Error('Failed to fetch heatmap data');
-  return response.json();
-}
