@@ -4,6 +4,7 @@ import Dashboard from './pages/Dashboard';
 import Tasks from './pages/Tasks';
 import KanbanBoard from './components/KanbanBoard';
 import AuthView from './components/AuthView';
+import LandingPage from './components/LandingPage';
 import FocusTimer from './components/FocusTimer';
 import ProductivityHeatmap from './components/ProductivityHeatmap';
 import CalendarView from './components/CalendarView';
@@ -15,6 +16,9 @@ function App() {
   const [user, setUser] = useState(
     localStorage.getItem('username') ? { username: localStorage.getItem('username') } : null
   );
+
+  // --- PRE-AUTH VIEW: 'landing' or 'auth' ---
+  const [preAuthView, setPreAuthView] = useState('landing');
 
   // --- APP STATE ---
   const [tasks, setTasks] = useState([]);
@@ -107,6 +111,15 @@ function App() {
 
   // --- RENDER LOGIN VIEW IF UNAUTHENTICATED ---
   if (!token) {
+    if (preAuthView === 'landing') {
+      return (
+        <LandingPage
+          onGetStarted={() => setPreAuthView('auth')}
+          onSignIn={() => setPreAuthView('auth')}
+        />
+      );
+    }
+
     return (
       <div className="app-shell">
        {/* FLOATING WORKSPACE BACKGROUND OBJECTS */}
@@ -117,9 +130,16 @@ function App() {
           <div className="floating-item">📋</div>
           <div className="floating-item">🎯</div>
         </div>
-        <h1 style={{ textAlign: 'center', fontSize: '2.5rem', color: 'var(--text-primary)', margin: '20px 0 0 0', fontWeight: '800' }}>
+        <button
+          onClick={() => setPreAuthView('landing')}
+          style={{
+            display: 'block', margin: '20px auto 0 auto', background: 'none', border: 'none',
+            cursor: 'pointer', textAlign: 'center', fontSize: '2.5rem', color: 'var(--text-primary)',
+            fontWeight: '800', padding: 0
+          }}
+        >
           Momentum
-        </h1>
+        </button>
         <p style={{ textAlign: 'center', color: 'var(--text-secondary)', marginTop: '4px', marginBottom: '40px' }}>
           Next-Gen Productivity Workspace
         </p>

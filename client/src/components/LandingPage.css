@@ -1,0 +1,348 @@
+.lp-root {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px 40px 0 40px;
+  box-sizing: border-box;
+}
+
+/* --- NAV --- */
+.lp-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 40px;
+}
+
+.lp-wordmark {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.lp-nav-signin {
+  background: none;
+  border: 1px solid var(--borders);
+  color: var(--text-secondary);
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.lp-nav-signin:hover {
+  border-color: var(--primary);
+  color: var(--text-primary);
+}
+
+/* --- HERO --- */
+.lp-hero {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 56px;
+  align-items: center;
+  padding: 40px 0 80px 0;
+}
+
+.lp-headline {
+  font-size: 3.4rem;
+  line-height: 1.08;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  margin: 0 0 22px 0;
+  color: var(--text-primary);
+  max-width: 15ch;
+}
+
+.lp-subhead {
+  font-size: 1.08rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  max-width: 46ch;
+  margin: 0 0 32px 0;
+}
+
+.lp-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.lp-cta-primary {
+  padding: 13px 26px;
+  font-size: 0.95rem;
+}
+
+.lp-cta-secondary {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 4px;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.lp-cta-secondary:hover {
+  color: var(--text-primary);
+  border-color: var(--text-muted);
+}
+
+/* --- HERO VISUAL: a task card with a momentum trail --- */
+.lp-hero-visual {
+  position: relative;
+  height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lp-trail {
+  position: absolute;
+  width: 260px;
+  height: 90px;
+  background: linear-gradient(115deg, transparent 0%, rgba(99, 102, 241, 0.35) 45%, rgba(236, 72, 153, 0.25) 100%);
+  filter: blur(28px);
+  transform: rotate(-6deg) translateX(-30px);
+  border-radius: 50%;
+  animation: lpDrift 7s ease-in-out infinite alternate;
+}
+
+.lp-floating-card {
+  position: relative;
+  width: 240px;
+  background: var(--card);
+  border: 1px solid var(--borders);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-md);
+  transform: rotate(-4deg);
+  animation: lpDrift 7s ease-in-out infinite alternate;
+}
+
+.lp-card-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.lp-card-check {
+  width: 16px;
+  height: 16px;
+  border-radius: 5px;
+  border: 2px solid var(--primary);
+  flex-shrink: 0;
+}
+
+.lp-card-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.lp-card-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  border-top: 1px solid rgba(123, 142, 200, 0.15);
+  padding-top: 10px;
+}
+
+.lp-card-priority {
+  color: #FF4A4A;
+  font-weight: 700;
+}
+
+@keyframes lpDrift {
+  from { transform: rotate(-4deg) translateY(0px); }
+  to { transform: rotate(-1deg) translateY(-14px); }
+}
+
+.lp-orbit-dot {
+  position: absolute;
+  font-size: 1.4rem;
+  opacity: 0.55;
+  animation: lpOrbit 14s linear infinite;
+}
+
+.lp-orbit-dot-a { top: 8%; right: 10%; animation-duration: 16s; }
+.lp-orbit-dot-b { bottom: 12%; left: 4%; animation-duration: 20s; animation-direction: reverse; }
+
+@keyframes lpOrbit {
+  from { transform: rotate(0deg) translateX(18px) rotate(0deg); }
+  to { transform: rotate(360deg) translateX(18px) rotate(-360deg); }
+}
+
+/* --- TASK FLOW STRIP --- */
+.lp-flow {
+  padding: 36px 0;
+  border-top: 1px solid var(--borders);
+  border-bottom: 1px solid var(--borders);
+  text-align: center;
+}
+
+.lp-flow-intro {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin: 0 0 22px 0;
+}
+
+.lp-flow-track {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.lp-flow-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lp-flow-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.lp-flow-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.lp-flow-arrow {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+/* --- FEATURES: divided rows, not repeated cards --- */
+.lp-features {
+  padding: 64px 0;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.lp-feature-row {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 32px;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--borders);
+}
+
+.lp-feature-row:first-child {
+  padding-top: 0;
+}
+
+.lp-feature-row:last-child {
+  border-bottom: none;
+}
+
+.lp-feature-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.lp-feature-desc {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  max-width: 48ch;
+}
+
+/* --- FINAL CTA --- */
+.lp-final-cta {
+  text-align: center;
+  padding: 60px 0 50px 0;
+}
+
+.lp-final-headline {
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0 0 26px 0;
+}
+
+/* --- FOOTER --- */
+.lp-footer {
+  text-align: center;
+  padding: 24px 0 40px 0;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 860px) {
+  .lp-hero {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 20px 0 50px 0;
+    text-align: center;
+  }
+
+  .lp-headline {
+    font-size: 2.4rem;
+    max-width: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .lp-subhead {
+    max-width: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .lp-hero-actions {
+    justify-content: center;
+  }
+
+  .lp-hero-visual {
+    height: 220px;
+    order: -1;
+  }
+
+  .lp-floating-card {
+    width: 200px;
+  }
+
+  .lp-feature-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 640px) {
+  .lp-root {
+    padding: 20px 20px 0 20px;
+  }
+
+  .lp-headline {
+    font-size: 2rem;
+  }
+}
+
+/* --- REDUCED MOTION --- */
+@media (prefers-reduced-motion: reduce) {
+  .lp-floating-card,
+  .lp-trail,
+  .lp-orbit-dot,
+  .floating-item {
+    animation: none !important;
+  }
+}
